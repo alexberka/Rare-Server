@@ -10,6 +10,7 @@ List<Category> categories = new()
     new() { Id = 6, Label = "Culture" },
     new() { Id = 7, Label = "Food" }
 };
+
 List<Tag> tags = new()
 {
     new() { Id = 1, Label = "America" },
@@ -20,6 +21,7 @@ List<Tag> tags = new()
     new() { Id = 6, Label = "Moscow" },
     new() { Id = 7, Label = "Europe" }
 };
+
 List<User> users = new()
 {
     new()
@@ -33,8 +35,69 @@ List<User> users = new()
         Password = "5%mythoughts41!",
         CreatedOn = DateTime.Now,
         Active = false
-    }
+    },
+    new()
+    {
+        Id = 2,
+        FirstName = "James",
+        LastName = "Joyce",
+        Email = "modernist@literature.com",
+        Bio = "Known for stream of consciousness.",
+        Username = "JoyceFan",
+        Password = "j0yceStream!",
+        CreatedOn = DateTime.Now,
+        Active = true
+    },
+    new()
+    {
+        Id = 3,
+        FirstName = "Franz",
+        LastName = "Kafka",
+        Email = "metamorphosis@kafka.com",
+        Bio = "Wrote about existential anxieties.",
+        Username = "Kafkaesque",
+        Password = "k4fka!@2024",
+        CreatedOn = DateTime.Now,
+        Active = true
+    },
+    new()
+    {
+        Id = 4,
+        FirstName = "Gabriel",
+        LastName = "García Márquez",
+        Email = "magicrealism@macondo.com",
+        Bio = "Master of magical realism.",
+        Username = "MacondoMagic",
+        Password = "g@m34rc!ez",
+        CreatedOn = DateTime.Now,
+        Active = false
+    },
+    new()
+    {
+        Id = 5,
+        FirstName = "Haruki",
+        LastName = "Murakami",
+        Email = "surreal@murakami.com",
+        Bio = "Writes surreal and fantastical fiction.",
+        Username = "MurakamiFan",
+        Password = "1Q2w3e4r!",
+        CreatedOn = DateTime.Now,
+        Active = true
+    },
+    new()
+{
+    Id = 6,
+    FirstName = "Margaret",
+    LastName = "Atwood",
+    Email = "dystopian@atwood.com",
+    Bio = "Known for her speculative fiction and dystopian novels.",
+    Username = "AtwoodFan",
+    Password = "M@rg@ret2024!",
+    CreatedOn = DateTime.Now,
+    Active = true
+}
 };
+
 List<Post> posts = new()
 {
     new() 
