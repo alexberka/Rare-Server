@@ -1,4 +1,3 @@
-
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -65,7 +64,7 @@ List<User> users = new()
     {
         Id = 4,
         FirstName = "Gabriel",
-        LastName = "Garc�a M�rquez",
+        LastName = "García Márquez",
         Email = "magicrealism@macondo.com",
         Bio = "Master of magical realism.",
         Username = "MacondoMagic",
@@ -275,8 +274,8 @@ app.MapGet("/posts/user/{id}", (int id) =>
         return Results.NotFound();
     }
     return Results.Ok(postByUser);
-
 });
+
 app.MapPost("/posts", (Post post) => 
 {
     post.Id = posts.Max(p => p.Id) + 1;
@@ -292,7 +291,8 @@ app.MapPut("/posts/{id}", (int id, Post post) =>
     if (postToUpdate == null)
     {
         return Results.NotFound();
-    } if ( id != post.Id)
+    }
+    if (id != post.Id)
     {
         return Results.BadRequest();
     }
@@ -303,6 +303,49 @@ app.MapPut("/posts/{id}", (int id, Post post) =>
 app.MapDelete("/post/{id}", (int id) => 
 {
     posts.Remove(posts.FirstOrDefault(p => p.Id == id));
+});
+
+app.MapGet("/categories", () =>
+{
+    return Results.Ok(categories);
+});
+
+app.MapPost("/categories", (Category category) =>
+{
+    category.Id = categories.Max(c => c.Id) + 1;
+    categories.Add(category);
+    return Results.Ok(category);
+});
+
+app.MapPut("/category/{id}", (int id, Category category) =>
+{
+    Category categoryToUpdate = categories.FirstOrDefault(c => c.Id == id);
+
+    if (id != category.Id)
+    {
+        return Results.BadRequest();
+    }
+    else if (categoryToUpdate == null)
+    {
+        categories.Add(category);
+    }
+    else
+    {
+        int categoryIndex = categories.IndexOf(categoryToUpdate);
+        categories[categoryIndex] = category;
+    };
+
+    return Results.Ok(category);
+});
+
+app.MapDelete("/category/{id}", (int id) =>
+{
+    if (categories.FirstOrDefault(c => c.Id == id) == null)
+    {
+        return Results.BadRequest();
+    }
+    categories.RemoveAll(c => c.Id == id);
+    return Results.Ok();
 });
 
 app.Run();
