@@ -132,7 +132,7 @@ List<Post> posts = new()
         Id = 4,
         UserId = 2,
         CategoryId = 3,
-        Title = "Pride and Prejudice",
+        Title = "Jane Eyre",
         PublicationDate = new DateTime(1813, 04, 11),
         Content = "There was no possibility of taking a walk that day. We had been wandering, indeed, in the leafless shrubbery an hour in the morning; but since dinner (Mrs. Reed, when there was no company, dined early) the cold winter wind had brought with it clouds so sombre, and a rain so penetrating, that further outdoor exercise was now out of the question."
     },    
@@ -141,9 +141,9 @@ List<Post> posts = new()
         Id = 5,
         UserId = 3,
         CategoryId = 2,
-        Title = "Jane Eyre",
+        Title = "100 Years of Solitude ",
         PublicationDate = new DateTime(1847, 07, 15),
-        Content = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife."
+        Content = "Many years later, as he faced the firing squad, Colonel Aureliano Buendía was to remember that distant afternoon when his father took him to discover ice."
     },    
     new() 
     {
@@ -152,7 +152,7 @@ List<Post> posts = new()
         CategoryId = 1,
         Title = "Wuthering Heights",
         PublicationDate = new DateTime(1847, 03, 15),
-        Content = "1801—I have just returned from a visit to my landlord—the solitary neighbour that I shall be troubled with."
+        Content = "I have just returned from a visit to my landlord, the solitary neighbour that I shall be troubled with."
     },    
     new() 
     {
@@ -217,13 +217,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-<<<<<<< HEAD
-app.MapPost("/posts", (Post post) => 
-{
-    post.Id = posts.Max(p => p.Id) + 1;
-    posts.Add(post);
-    return post;
-=======
 app.MapGet("/users", () =>
 {
     return users.OrderBy(user => user.Username);
@@ -237,7 +230,12 @@ app.MapGet("users/{id}", (int id) =>
         return Results.NotFound();
     }
     return Results.Ok(user);
->>>>>>> main
+});
+app.MapPost("/posts", (Post post) => 
+{
+    post.Id = posts.Max(p => p.Id) + 1;
+    posts.Add(post);
+    return post;
 });
 
 app.MapPut("/posts/{id}", (int id, Post post) => 
