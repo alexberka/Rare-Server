@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -217,6 +219,43 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+app.MapGet("/posts", () =>
+{
+    return posts.OrderByDescending(post => post.PublicationDate);
+});
+
+app.MapGet("/posts/{Id}", (int Id) =>
+{
+       Post post = posts.FirstOrDefault(post => post.Id == Id);
+        if (posts == null)
+      {
+            return Results.NotFound();
+      }
+       return Results.Ok(post);
+
+ });
+
+app.MapGet("/posts/category/{Id}", (int Id) =>
+{
+    List<Post> postByCategory = posts.Where(post => post.CategoryId == Id).ToList();
+    if (postByCategory == null)
+    {
+        return Results.NotFound();
+    }
+        return Results.Ok(postByCategory);
+});
+
+app.MapGet("/posts/user/{Id}", (int Id) =>
+{
+    List<Post> postByUser = posts.Where(post => post.UserId == Id).ToList();
+    if (postByUser == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(postByUser);
+
+});
 
 
 app.Run();
