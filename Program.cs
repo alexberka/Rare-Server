@@ -64,7 +64,7 @@ List<User> users = new()
     {
         Id = 4,
         FirstName = "Gabriel",
-        LastName = "García Márquez",
+        LastName = "Garcï¿½a Mï¿½rquez",
         Email = "magicrealism@macondo.com",
         Bio = "Master of magical realism.",
         Username = "MacondoMagic",
@@ -217,7 +217,33 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapPost("/posts", (Post post) => 
+{
+    post.Id = posts.Max(p => p.Id) + 1;
+    posts.Add(post);
+    return post;
+});
 
+app.MapPut("/posts/{id}", (int id, Post post) => 
+{
+    Post postToUpdate = posts.FirstOrDefault(p => p.Id == id);
+    int postIndex = posts.IndexOf(postToUpdate);
+
+    if (postToUpdate == null)
+    {
+        return Results.NotFound();
+    } if ( id != post.Id)
+    {
+        return Results.BadRequest();
+    }
+    posts[postIndex] = post;
+    return Results.Ok();
+});
+
+app.MapDelete("/post/{id}", (int id) => 
+{
+    posts.Remove(posts.FirstOrDefault(p => p.Id == id));
+});
 
 app.Run();
 
