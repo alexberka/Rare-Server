@@ -1,5 +1,3 @@
-using System.Globalization;
-
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -35,7 +33,7 @@ List<User> users = new()
         Bio = "Now deceased but still at it.",
         Username = "LoneWoolf",
         Password = "5%mythoughts41!",
-        CreatedOn = new DateTime(2024, 7, 10),
+        CreatedOn = new DateTime(2024, 07, 10),
         Active = false
     },
     new()
@@ -47,7 +45,7 @@ List<User> users = new()
         Bio = "Known for stream of consciousness.",
         Username = "JoyceFan",
         Password = "j0yceStream!",
-        CreatedOn = new DateTime(2024, 7, 26),
+        CreatedOn = new DateTime(2024, 07, 26),
         Active = true
     },
     new()
@@ -59,7 +57,7 @@ List<User> users = new()
         Bio = "Wrote about existential anxieties.",
         Username = "Kafkaesque",
         Password = "k4fka!@2024",
-        CreatedOn = new DateTime(2024, 7, 14),
+        CreatedOn = new DateTime(2024, 07, 14),
         Active = true
     },
     new()
@@ -71,7 +69,7 @@ List<User> users = new()
         Bio = "Master of magical realism.",
         Username = "MacondoMagic",
         Password = "g@m34rc!ez",
-        CreatedOn = new DateTime(2024, 7, 19),
+        CreatedOn = new DateTime(2024, 07, 19),
         Active = false
     },
     new()
@@ -83,7 +81,7 @@ List<User> users = new()
         Bio = "Writes surreal and fantastical fiction.",
         Username = "MurakamiFan",
         Password = "1Q2w3e4r!",
-        CreatedOn = new DateTime(2024, 7, 22),
+        CreatedOn = new DateTime(2024, 07, 22),
         Active = true
     },
     new()
@@ -95,7 +93,7 @@ List<User> users = new()
         Bio = "Known for her speculative fiction and dystopian novels.",
         Username = "AtwoodFan",
         Password = "M@rg@ret2024!",
-        CreatedOn = new DateTime(2024, 7, 16),
+        CreatedOn = new DateTime(2024, 07, 16),
         Active = true
     }
 };
@@ -237,4 +235,3 @@ app.MapGet("users/{id}", (int id) =>
 
 app.Run();
 
-DigitShapes 
