@@ -1,3 +1,6 @@
+
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -33,7 +36,7 @@ List<User> users = new()
         Bio = "Now deceased but still at it.",
         Username = "LoneWoolf",
         Password = "5%mythoughts41!",
-        CreatedOn = DateTime.Now,
+        CreatedOn = new DateTime(2024, 07, 10),
         Active = false
     },
     new()
@@ -45,7 +48,7 @@ List<User> users = new()
         Bio = "Known for stream of consciousness.",
         Username = "JoyceFan",
         Password = "j0yceStream!",
-        CreatedOn = DateTime.Now,
+        CreatedOn = new DateTime(2024, 07, 26),
         Active = true
     },
     new()
@@ -57,19 +60,19 @@ List<User> users = new()
         Bio = "Wrote about existential anxieties.",
         Username = "Kafkaesque",
         Password = "k4fka!@2024",
-        CreatedOn = DateTime.Now,
+        CreatedOn = new DateTime(2024, 07, 14),
         Active = true
     },
     new()
     {
         Id = 4,
         FirstName = "Gabriel",
-        LastName = "Garc�a M�rquez",
+        LastName = "García Márquez",
         Email = "magicrealism@macondo.com",
         Bio = "Master of magical realism.",
         Username = "MacondoMagic",
         Password = "g@m34rc!ez",
-        CreatedOn = DateTime.Now,
+        CreatedOn = new DateTime(2024, 07, 19),
         Active = false
     },
     new()
@@ -81,21 +84,21 @@ List<User> users = new()
         Bio = "Writes surreal and fantastical fiction.",
         Username = "MurakamiFan",
         Password = "1Q2w3e4r!",
-        CreatedOn = DateTime.Now,
+        CreatedOn = new DateTime(2024, 07, 22),
         Active = true
     },
     new()
-{
-    Id = 6,
-    FirstName = "Margaret",
-    LastName = "Atwood",
-    Email = "dystopian@atwood.com",
-    Bio = "Known for her speculative fiction and dystopian novels.",
-    Username = "AtwoodFan",
-    Password = "M@rg@ret2024!",
-    CreatedOn = DateTime.Now,
-    Active = true
-}
+    {
+        Id = 6,
+        FirstName = "Margaret",
+        LastName = "Atwood",
+        Email = "dystopian@atwood.com",
+        Bio = "Known for her speculative fiction and dystopian novels.",
+        Username = "AtwoodFan",
+        Password = "M@rg@ret2024!",
+        CreatedOn = new DateTime(2024, 07, 16),
+        Active = true
+    }
 };
 
 List<Post> posts = new()
@@ -125,14 +128,14 @@ List<Post> posts = new()
         CategoryId = 4,
         Title = "Moby-Dick",
         PublicationDate = new DateTime(1851, 11, 21),
-        Content = "Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."
+        Content = "Call me Ishmael. Some years ago, never mind how long precisely, having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."
     },    
     new() 
     {
         Id = 4,
         UserId = 2,
         CategoryId = 3,
-        Title = "Pride and Prejudice",
+        Title = "Jane Eyre",
         PublicationDate = new DateTime(1813, 04, 11),
         Content = "There was no possibility of taking a walk that day. We had been wandering, indeed, in the leafless shrubbery an hour in the morning; but since dinner (Mrs. Reed, when there was no company, dined early) the cold winter wind had brought with it clouds so sombre, and a rain so penetrating, that further outdoor exercise was now out of the question."
     },    
@@ -141,9 +144,9 @@ List<Post> posts = new()
         Id = 5,
         UserId = 3,
         CategoryId = 2,
-        Title = "Jane Eyre",
-        PublicationDate = new DateTime(1847, 07, 15),
-        Content = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife."
+        Title = "100 Years of Solitude ",
+        PublicationDate = new DateTime(1943, 07, 15),
+        Content = "Many years later, as he faced the firing squad, Colonel Aureliano Buendía was to remember that distant afternoon when his father took him to discover ice."
     },    
     new() 
     {
@@ -151,8 +154,8 @@ List<Post> posts = new()
         UserId = 4,
         CategoryId = 1,
         Title = "Wuthering Heights",
-        PublicationDate = new DateTime(1847, 03, 15),
-        Content = "1801—I have just returned from a visit to my landlord—the solitary neighbour that I shall be troubled with."
+        PublicationDate = new DateTime(1967, 03, 15),
+        Content = "I have just returned from a visit to my landlord, the solitary neighbour that I shall be troubled with."
     },    
     new() 
     {
@@ -217,6 +220,94 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/users", () =>
+{
+    return users.OrderBy(user => user.Username);
+});
+
+app.MapGet("users/{id}", (int id) =>
+{
+    User user = users.FirstOrDefault(u => u.Id == id);
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(user);
+});
+
+app.MapGet("/posts", () =>
+{
+    return posts.OrderByDescending(post => post.PublicationDate);
+});
+
+app.MapGet("/posts/{id}", (int id) =>
+{
+       Post post = posts.FirstOrDefault(post => post.Id == id);
+        if (post == null)
+      {
+        return Results.NotFound();
+      }
+       return Results.Ok(post);
+
+ });
+
+app.MapGet("/posts/category/{id}", (int id) =>
+{
+    List<Post> postByCategory = posts
+    .Where(post => post.CategoryId == id)
+    .OrderByDescending(post => post.PublicationDate)
+    .ToList();
+
+    if (postByCategory.Count == 0)
+    {
+        return Results.NotFound();
+    }
+        return Results.Ok(postByCategory);
+});
+
+app.MapGet("/posts/user/{id}", (int id) =>
+{
+    List<Post> postByUser = posts
+    .Where(post => post.UserId == id)
+    .OrderByDescending(post => post.PublicationDate)
+    .ToList();
+
+    if (postByUser.Count == 0)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(postByUser);
+});
+
+app.MapPost("/posts", (Post post) => 
+{
+    post.Id = posts.Max(p => p.Id) + 1;
+    posts.Add(post);
+    return post;
+});
+
+app.MapPut("/posts/{id}", (int id, Post post) => 
+{
+    Post postToUpdate = posts.FirstOrDefault(p => p.Id == id);
+    int postIndex = posts.IndexOf(postToUpdate);
+
+    if (postToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    if (id != post.Id)
+    {
+        return Results.BadRequest();
+    }
+    posts[postIndex] = post;
+    return Results.Ok(post);
+});
+
+app.MapDelete("/post/{id}", (int id) => 
+{
+    posts.Remove(posts.FirstOrDefault(p => p.Id == id));
+});
+
 app.MapGet("/categories", () =>
 {
     return Results.Ok(categories);
@@ -232,8 +323,12 @@ app.MapPost("/categories", (Category category) =>
 app.MapPut("/category/{id}", (int id, Category category) =>
 {
     Category categoryToUpdate = categories.FirstOrDefault(c => c.Id == id);
-    category.Id = id;
-    if (categoryToUpdate == null)
+
+    if (id != category.Id)
+    {
+        return Results.BadRequest();
+    }
+    else if (categoryToUpdate == null)
     {
         categories.Add(category);
     }
@@ -242,6 +337,7 @@ app.MapPut("/category/{id}", (int id, Category category) =>
         int categoryIndex = categories.IndexOf(categoryToUpdate);
         categories[categoryIndex] = category;
     };
+
     return Results.Ok(category);
 });
 
