@@ -1,6 +1,3 @@
-
-using Microsoft.Extensions.Hosting;
-
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
