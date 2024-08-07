@@ -238,9 +238,9 @@ app.MapGet("/posts", () =>
     return posts.OrderByDescending(post => post.PublicationDate);
 });
 
-app.MapGet("/posts/{Id}", (int Id) =>
+app.MapGet("/posts/{id}", (int id) =>
 {
-       Post post = posts.FirstOrDefault(post => post.Id == Id);
+       Post post = posts.FirstOrDefault(post => post.Id == id);
         if (post == null)
       {
         return Results.NotFound();
@@ -249,10 +249,10 @@ app.MapGet("/posts/{Id}", (int Id) =>
 
  });
 
-app.MapGet("/posts/category/{Id}", (int Id) =>
+app.MapGet("/posts/category/{id}", (int id) =>
 {
     List<Post> postByCategory = posts
-    .Where(post => post.CategoryId == Id)
+    .Where(post => post.CategoryId == id)
     .OrderByDescending(post => post.PublicationDate)
     .ToList();
 
@@ -263,10 +263,14 @@ app.MapGet("/posts/category/{Id}", (int Id) =>
         return Results.Ok(postByCategory);
 });
 
-app.MapGet("/posts/user/{Id}", (int Id) =>
+app.MapGet("/posts/user/{id}", (int id) =>
 {
-    List<Post> postByUser = posts.Where(post => post.UserId == Id).ToList();
-    if (postByUser.Count == null)
+    List<Post> postByUser = posts
+    .Where(post => post.UserId == id)
+    .OrderByDescending(post => post.PublicationDate)
+    .ToList();
+
+    if (postByUser.Count == 0)
     {
         return Results.NotFound();
     }
