@@ -142,7 +142,7 @@ List<Post> posts = new()
         UserId = 3,
         CategoryId = 2,
         Title = "100 Years of Solitude ",
-        PublicationDate = new DateTime(1847, 07, 15),
+        PublicationDate = new DateTime(1943, 07, 15),
         Content = "Many years later, as he faced the firing squad, Colonel Aureliano Buendía was to remember that distant afternoon when his father took him to discover ice."
     },    
     new() 
@@ -151,7 +151,7 @@ List<Post> posts = new()
         UserId = 4,
         CategoryId = 1,
         Title = "Wuthering Heights",
-        PublicationDate = new DateTime(1847, 03, 15),
+        PublicationDate = new DateTime(1967, 03, 15),
         Content = "I have just returned from a visit to my landlord, the solitary neighbour that I shall be troubled with."
     },    
     new() 
