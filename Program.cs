@@ -297,7 +297,7 @@ app.MapPut("/posts/{id}", (int id, Post post) =>
         return Results.BadRequest();
     }
     posts[postIndex] = post;
-    return Results.Ok();
+    return Results.Ok(post);
 });
 
 app.MapDelete("/post/{id}", (int id) => 
