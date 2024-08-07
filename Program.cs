@@ -217,7 +217,43 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/categories", () =>
+{
+    return Results.Ok(categories);
+});
 
+app.MapPost("/categories", (Category category) =>
+{
+    category.Id = categories.Max(c => c.Id) + 1;
+    categories.Add(category);
+    return Results.Ok(category);
+});
+
+app.MapPut("/category/{id}", (int id, Category category) =>
+{
+    Category categoryToUpdate = categories.FirstOrDefault(c => c.Id == id);
+    category.Id = id;
+    if (categoryToUpdate == null)
+    {
+        categories.Add(category);
+    }
+    else
+    {
+        int categoryIndex = categories.IndexOf(categoryToUpdate);
+        categories[categoryIndex] = category;
+    };
+    return Results.Ok(category);
+});
+
+app.MapDelete("/category/{id}", (int id) =>
+{
+    if (categories.FirstOrDefault(c => c.Id == id) == null)
+    {
+        return Results.BadRequest();
+    }
+    categories.RemoveAll(c => c.Id == id);
+    return Results.Ok();
+});
 
 app.Run();
 
