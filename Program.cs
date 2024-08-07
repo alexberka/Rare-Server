@@ -1,3 +1,4 @@
+
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -230,6 +231,51 @@ app.MapGet("users/{id}", (int id) =>
         return Results.NotFound();
     }
     return Results.Ok(user);
+});
+
+app.MapGet("/posts", () =>
+{
+    return posts.OrderByDescending(post => post.PublicationDate);
+});
+
+app.MapGet("/posts/{id}", (int id) =>
+{
+       Post post = posts.FirstOrDefault(post => post.Id == id);
+        if (post == null)
+      {
+        return Results.NotFound();
+      }
+       return Results.Ok(post);
+
+ });
+
+app.MapGet("/posts/category/{id}", (int id) =>
+{
+    List<Post> postByCategory = posts
+    .Where(post => post.CategoryId == id)
+    .OrderByDescending(post => post.PublicationDate)
+    .ToList();
+
+    if (postByCategory.Count == 0)
+    {
+        return Results.NotFound();
+    }
+        return Results.Ok(postByCategory);
+});
+
+app.MapGet("/posts/user/{id}", (int id) =>
+{
+    List<Post> postByUser = posts
+    .Where(post => post.UserId == id)
+    .OrderByDescending(post => post.PublicationDate)
+    .ToList();
+
+    if (postByUser.Count == 0)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(postByUser);
+
 });
 app.MapPost("/posts", (Post post) => 
 {
