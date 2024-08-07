@@ -217,6 +217,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/users", () =>
+{
+    return users.OrderBy(user => user.Username);
+});
+
+app.MapGet("users/{id}", (int id) =>
+{
+    User user = users.FirstOrDefault(u => u.Id == id);
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(user);
+});
 
 
 app.Run();
