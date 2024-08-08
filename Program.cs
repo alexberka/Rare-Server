@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 List<Category> categories = new()
@@ -201,10 +203,24 @@ List<Post> posts = new()
     
 };
 
+List<PostTag> postTags = new()
+{
+    new() { Id = 1, PostId = 1, TagId = 3 },
+    new() { Id = 2, PostId = 1, TagId = 6 },
+    new() { Id = 3, PostId = 2, TagId = 5 },
+    new() { Id = 4, PostId = 4, TagId = 6 },
+    new() { Id = 5, PostId = 5, TagId = 1 },
+    new() { Id = 6, PostId = 8, TagId = 4 }
+};
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>
+(
+    options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+);
 
 var app = builder.Build();
 
@@ -239,16 +255,19 @@ app.MapGet("/posts", () =>
 
 app.MapGet("/posts/{id}", (int id) =>
 {
-       Post post = posts.FirstOrDefault(post => post.Id == id);
-        if (post == null)
-      {
+    Post post = posts.FirstOrDefault(post => post.Id == id);
+    if (post == null)
+    {
         return Results.NotFound();
-      }
-       return Results.Ok(post);
+    }
+    post.Tags = tags
+        .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == id))
+        .ToList();
+    return Results.Ok(post);
 
- });
+});
 
-app.MapGet("/posts/category/{id}", (int id) =>
+app.MapGet("/posts/categories/{id}", (int id) =>
 {
     List<Post> postByCategory = posts
     .Where(post => post.CategoryId == id)
@@ -259,10 +278,26 @@ app.MapGet("/posts/category/{id}", (int id) =>
     {
         return Results.NotFound();
     }
-        return Results.Ok(postByCategory);
+
+    return Results.Ok(postByCategory);
 });
 
-app.MapGet("/posts/user/{id}", (int id) =>
+app.MapGet("/posts/tags/{id}", (int id) =>
+{
+    List<Post> postsByTag = posts
+        .Where(p => postTags.Any(pt => pt.PostId == p.Id && pt.TagId == id))
+        .OrderByDescending(post => post.PublicationDate)
+        .ToList();
+
+    if (postsByTag.Count == 0)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(postsByTag);
+});
+
+app.MapGet("/posts/users/{id}", (int id) =>
 {
     List<Post> postByUser = posts
     .Where(post => post.UserId == id)
@@ -300,14 +335,30 @@ app.MapPut("/posts/{id}", (int id, Post post) =>
     return Results.Ok(post);
 });
 
-app.MapDelete("/post/{id}", (int id) => 
+app.MapDelete("/posts/{id}", (int id) => 
 {
-    posts.Remove(posts.FirstOrDefault(p => p.Id == id));
+    Post? postToDelete = posts.FirstOrDefault(p => p.Id == id);
+    if (postToDelete == null)
+    {
+        return Results.BadRequest();
+    }
+    posts.Remove(postToDelete);
+    return Results.Ok();
 });
 
 app.MapGet("/categories", () =>
 {
     return Results.Ok(categories);
+});
+
+app.MapGet("/categories/{id}", (int id) =>
+{
+    Category category = categories.FirstOrDefault(c => c.Id == id);
+    if (category == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(category);
 });
 
 app.MapPost("/categories", (Category category) =>
@@ -317,7 +368,7 @@ app.MapPost("/categories", (Category category) =>
     return Results.Ok(category);
 });
 
-app.MapPut("/category/{id}", (int id, Category category) =>
+app.MapPut("/categories/{id}", (int id, Category category) =>
 {
     Category categoryToUpdate = categories.FirstOrDefault(c => c.Id == id);
 
@@ -338,13 +389,84 @@ app.MapPut("/category/{id}", (int id, Category category) =>
     return Results.Ok(category);
 });
 
-app.MapDelete("/category/{id}", (int id) =>
+app.MapDelete("/categories/{id}", (int id) =>
 {
     if (categories.FirstOrDefault(c => c.Id == id) == null)
     {
         return Results.BadRequest();
     }
     categories.RemoveAll(c => c.Id == id);
+    return Results.Ok();
+});
+
+app.MapGet("/tags", () =>
+{
+    return Results.Ok(tags);
+});
+
+app.MapGet("/tags/{id}", (int id) =>
+{
+    Tag tag = tags.FirstOrDefault(t => t.Id == id);
+    if (tag == null)
+    {
+        return Results.NotFound();
+    }
+    tag.Posts = posts
+        .Where(p => postTags.Any(pt => pt.PostId == p.Id && pt.TagId == id))
+        .ToList();
+    return Results.Ok(tag);
+});
+
+app.MapPost("/tags", (Tag tag) =>
+{
+    tag.Id = tags.Max(t => t.Id) + 1;
+    tags.Add(tag);
+    return Results.Ok(tag);
+});
+
+app.MapPut("/tags/{id}", (int id, Tag tag) =>
+{
+    Tag? tagToUpdate = tags.FirstOrDefault(t => t.Id == id);
+
+    if (tagToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    else if (id != tag.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    int tagIndex = tags.IndexOf(tagToUpdate);
+    tags[tagIndex] = tag;
+    return Results.Ok(tag);
+});
+
+app.MapDelete("/tags/{id}", (int id) =>
+{
+    if (tags.FirstOrDefault(t => t.Id == id) == null)
+    {
+        return Results.BadRequest();
+    }
+    tags.RemoveAll(t => t.Id == id);
+    return Results.Ok();
+});
+
+app.MapPost("/postTags", (PostTag postTag) =>
+{
+    postTag.Id = postTags.Max(pt => pt.Id) + 1;
+    postTags.Add(postTag);
+    return Results.Ok(postTag);
+});
+
+app.MapDelete("/postTags/{id}", (int id) =>
+{
+    PostTag? postTagToDelete = postTags.FirstOrDefault(pt => pt.Id == id);
+    if (postTagToDelete == null)
+    {
+        return Results.BadRequest();
+    }
+    postTags.Remove(postTagToDelete);
     return Results.Ok();
 });
 
