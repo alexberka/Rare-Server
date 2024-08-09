@@ -1,7 +1,5 @@
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
-
 List<Category> categories = new()
 {
     new() { Id = 1, Label = "Business" },
@@ -120,7 +118,7 @@ List<Post> posts = new()
         PublicationDate = new DateTime(1813, 04, 11),
         Content = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife."
     },
-        new() 
+    new() 
     {
         Id = 3,
         UserId = 3,
@@ -200,7 +198,6 @@ List<Post> posts = new()
         PublicationDate = new DateTime(1865, 04, 14),
         Content = "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do; once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, 'and what is the use of a book,' thought Alice, 'without pictures or conversations?"
     },
-    
 };
 
 List<PostTag> postTags = new()
@@ -213,7 +210,8 @@ List<PostTag> postTags = new()
     new() { Id = 6, PostId = 8, TagId = 4 }
 };
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -221,16 +219,27 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>
 (
     options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
 );
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5003")
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapGet("/users", () =>
@@ -471,4 +480,3 @@ app.MapDelete("/postTags/{id}", (int id) =>
 });
 
 app.Run();
-
