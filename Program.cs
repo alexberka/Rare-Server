@@ -458,6 +458,7 @@ app.MapDelete("/tags/{id}", (int id) =>
     {
         return Results.BadRequest();
     }
+    postTags.RemoveAll(t => t.TagId == id);
     tags.RemoveAll(t => t.Id == id);
     return Results.Ok();
 });
@@ -478,6 +479,11 @@ app.MapDelete("/postTags/{id}", (int id) =>
     }
     postTags.Remove(postTagToDelete);
     return Results.Ok();
+});
+
+app.MapGet("/postTags", () =>
+{
+    return Results.Ok(postTags);
 });
 
 app.Run();
