@@ -357,7 +357,7 @@ app.MapDelete("/posts/{id}", (int id) =>
 
 app.MapGet("/categories", () =>
 {
-    return Results.Ok(categories);
+    return Results.Ok(categories.OrderBy(category=> category.Label));
 });
 
 app.MapGet("/categories/{id}", (int id) =>
@@ -410,7 +410,7 @@ app.MapDelete("/categories/{id}", (int id) =>
 
 app.MapGet("/tags", () =>
 {
-    return Results.Ok(tags);
+    return Results.Ok(tags.OrderBy(tag => tag.Label));
 });
 
 app.MapGet("/tags/{id}", (int id) =>
