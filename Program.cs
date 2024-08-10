@@ -252,7 +252,7 @@ app.MapGet("users/{id}", (int id) =>
     User user = users.FirstOrDefault(u => u.Id == id);
     if (user == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("User Not Found");
     }
     return Results.Ok(user);
 });
@@ -267,7 +267,7 @@ app.MapGet("/posts/{id}", (int id) =>
     Post post = posts.FirstOrDefault(post => post.Id == id);
     if (post == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Post Not Found");
     }
     post.Tags = tags
         .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == id))
@@ -278,45 +278,46 @@ app.MapGet("/posts/{id}", (int id) =>
 
 app.MapGet("/posts/categories/{id}", (int id) =>
 {
+    if (!categories.Any(c => c.Id == id))
+    {
+        return Results.NotFound("Category Not Found");
+    }
+
     List<Post> postByCategory = posts
     .Where(post => post.CategoryId == id)
     .OrderByDescending(post => post.PublicationDate)
     .ToList();
-
-    if (postByCategory.Count == 0)
-    {
-        return Results.NotFound();
-    }
 
     return Results.Ok(postByCategory);
 });
 
 app.MapGet("/posts/tags/{id}", (int id) =>
 {
+    if (!tags.Any(t => t.Id == id))
+    {
+        return Results.NotFound("Tag Not Found");
+    }
+
     List<Post> postsByTag = posts
         .Where(p => postTags.Any(pt => pt.PostId == p.Id && pt.TagId == id))
         .OrderByDescending(post => post.PublicationDate)
         .ToList();
-
-    if (postsByTag.Count == 0)
-    {
-        return Results.NotFound();
-    }
 
     return Results.Ok(postsByTag);
 });
 
 app.MapGet("/posts/users/{id}", (int id) =>
 {
+    if (!users.Any(u => u.Id == id))
+    {
+        return Results.NotFound("User Not Found");
+    }
+
     List<Post> postByUser = posts
     .Where(post => post.UserId == id)
     .OrderByDescending(post => post.PublicationDate)
     .ToList();
 
-    if (postByUser.Count == 0)
-    {
-        return Results.NotFound();
-    }
     return Results.Ok(postByUser);
 });
 
@@ -334,11 +335,11 @@ app.MapPut("/posts/{id}", (int id, Post post) =>
 
     if (postToUpdate == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Post Not Found");
     }
     if (id != post.Id)
     {
-        return Results.BadRequest();
+        return Results.BadRequest("Post Id does not match URI");
     }
     posts[postIndex] = post;
     return Results.Ok(post);
@@ -365,7 +366,7 @@ app.MapGet("/categories/{id}", (int id) =>
     Category category = categories.FirstOrDefault(c => c.Id == id);
     if (category == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Category Not Found");
     }
     return Results.Ok(category);
 });
@@ -383,7 +384,7 @@ app.MapPut("/categories/{id}", (int id, Category category) =>
 
     if (id != category.Id)
     {
-        return Results.BadRequest();
+        return Results.BadRequest("Category Id does not match URI");
     }
     else if (categoryToUpdate == null)
     {
@@ -418,7 +419,7 @@ app.MapGet("/tags/{id}", (int id) =>
     Tag tag = tags.FirstOrDefault(t => t.Id == id);
     if (tag == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Tag Not Found");
     }
     tag.Posts = posts
         .Where(p => postTags.Any(pt => pt.PostId == p.Id && pt.TagId == id))
@@ -439,11 +440,11 @@ app.MapPut("/tags/{id}", (int id, Tag tag) =>
 
     if (tagToUpdate == null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Tag Not Found");
     }
     else if (id != tag.Id)
     {
-        return Results.BadRequest();
+        return Results.BadRequest("Tag Id does not match URI");
     }
 
     int tagIndex = tags.IndexOf(tagToUpdate);
