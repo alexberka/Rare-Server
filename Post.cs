@@ -6,5 +6,7 @@ public class Post
     public string? Title { get; set; }
     public DateTime? PublicationDate { get; set; }
     public string? Content { get; set; }
+    public User? User { get; set; }
+    public Category? Category { get; set; }
     public List<Tag> Tags { get; set; }
 }
