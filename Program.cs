@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 
 List<Category> categories = new()
@@ -259,6 +260,14 @@ app.MapGet("users/{id}", (int id) =>
 
 app.MapGet("/posts", () =>
 {
+    foreach (Post post in posts)
+    {
+        post.User = users.FirstOrDefault(u => u.Id == post.UserId);
+        post.Category = categories.FirstOrDefault(c => c.Id == post.CategoryId);
+        post.Tags = tags
+            .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == post.Id))
+            .ToList();
+    }
     return posts.OrderByDescending(post => post.PublicationDate);
 });
 
@@ -269,6 +278,8 @@ app.MapGet("/posts/{id}", (int id) =>
     {
         return Results.NotFound("Post Not Found");
     }
+    post.User = users.FirstOrDefault(u => u.Id == post.UserId);
+    post.Category = categories.FirstOrDefault(c => c.Id == post.CategoryId);
     post.Tags = tags
         .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == id))
         .ToList();
@@ -282,13 +293,21 @@ app.MapGet("/posts/categories/{id}", (int id) =>
     {
         return Results.NotFound("Category Not Found");
     }
+    
+    List<Post> postsByCategory = posts
+        .Where(post => post.CategoryId == id)
+        .OrderByDescending(post => post.PublicationDate)
+        .ToList();
+    foreach (Post post in postsByCategory)
+    {
+        post.User = users.FirstOrDefault(u => u.Id == post.UserId);
+        post.Category = categories.FirstOrDefault(c => c.Id == post.CategoryId);
+        post.Tags = tags
+            .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == post.Id))
+            .ToList();
+    }
 
-    List<Post> postByCategory = posts
-    .Where(post => post.CategoryId == id)
-    .OrderByDescending(post => post.PublicationDate)
-    .ToList();
-
-    return Results.Ok(postByCategory);
+    return Results.Ok(postsByCategory);
 });
 
 app.MapGet("/posts/tags/{id}", (int id) =>
@@ -302,6 +321,14 @@ app.MapGet("/posts/tags/{id}", (int id) =>
         .Where(p => postTags.Any(pt => pt.PostId == p.Id && pt.TagId == id))
         .OrderByDescending(post => post.PublicationDate)
         .ToList();
+    foreach (Post post in postsByTag)
+    {
+        post.User = users.FirstOrDefault(u => u.Id == post.UserId);
+        post.Category = categories.FirstOrDefault(c => c.Id == post.CategoryId);
+        post.Tags = tags
+            .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == post.Id))
+            .ToList();
+    }
 
     return Results.Ok(postsByTag);
 });
@@ -313,12 +340,20 @@ app.MapGet("/posts/users/{id}", (int id) =>
         return Results.NotFound("User Not Found");
     }
 
-    List<Post> postByUser = posts
-    .Where(post => post.UserId == id)
-    .OrderByDescending(post => post.PublicationDate)
-    .ToList();
+    List<Post> postsByUser = posts
+        .Where(post => post.UserId == id)
+        .OrderByDescending(post => post.PublicationDate)
+        .ToList();
+    foreach (Post post in postsByUser)
+    {
+        post.User = users.FirstOrDefault(u => u.Id == post.UserId);
+        post.Category = categories.FirstOrDefault(c => c.Id == post.CategoryId);
+        post.Tags = tags
+            .Where(t => postTags.Any(pt => pt.TagId == t.Id && pt.PostId == post.Id))
+            .ToList();
+    }
 
-    return Results.Ok(postByUser);
+    return Results.Ok(postsByUser);
 });
 
 app.MapPost("/posts", (Post post) => 
