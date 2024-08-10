@@ -352,6 +352,7 @@ app.MapDelete("/posts/{id}", (int id) =>
     {
         return Results.BadRequest();
     }
+    postTags.RemoveAll(pt => pt.PostId == id);
     posts.Remove(postToDelete);
     return Results.Ok();
 });
