@@ -106,7 +106,7 @@ List<Post> posts = new()
         Id = 1,
         UserId = 1,
         CategoryId = 6,
-        Title = "Mr.Bennett and Mrs. Brown",
+        Title = "Mr. Bennett and Mrs. Brown",
         PublicationDate = new DateTime(1924, 05, 18),
         Content = "Mr. Bennett says that it is only if the characters are real that the novel has any chance of surviving. Otherwise, die it must. But, I ask myself, what is reality? And who are the judges of reality?"
     },
@@ -506,9 +506,9 @@ app.MapPost("/postTags", (PostTag postTag) =>
     return Results.Ok(postTag);
 });
 
-app.MapDelete("/postTags/{id}", (int id) =>
+app.MapDelete("/postTags/{postId}/{tagId}", (int postId, int tagId) =>
 {
-    PostTag? postTagToDelete = postTags.FirstOrDefault(pt => pt.Id == id);
+    PostTag? postTagToDelete = postTags.FirstOrDefault(pt => pt.PostId == postId && pt.TagId == tagId);
     if (postTagToDelete == null)
     {
         return Results.BadRequest();
